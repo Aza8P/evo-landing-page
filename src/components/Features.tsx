@@ -1,41 +1,41 @@
 
 import React from 'react';
-import { activity, zap, wind } from 'lucide-react';
+import { Activity, Zap, Wind } from 'lucide-react';
 
 const Features = () => {
   const features = [
     {
-      icon: activity,
+      icon: Activity,
       title: "No-slip stay-put waistband",
       description: "Engineered to stay in place during your most intense sessions",
       gradient: "from-cyan-400 to-blue-500"
     },
     {
-      icon: wind,
+      icon: Wind,
       title: "Sweat-wicking + fast-dry fabric",
       description: "Advanced moisture management keeps you cool and comfortable",
       gradient: "from-purple-400 to-pink-500"
     },
     {
-      icon: zap,
+      icon: Zap,
       title: "Sculpts without compressing",
       description: "Perfect balance of support and freedom of movement",
       gradient: "from-cyan-400 to-purple-500"
     },
     {
-      icon: activity,
+      icon: Activity,
       title: "Built for spin bikes, HIIT, and sweaty indoor sessions",
       description: "Specifically designed for high-intensity indoor workouts",
       gradient: "from-pink-400 to-red-500"
     },
     {
-      icon: wind,
+      icon: Wind,
       title: "Flat seams = no chafing",
       description: "Smooth construction eliminates irritation and discomfort",
       gradient: "from-blue-400 to-cyan-500"
     },
     {
-      icon: zap,
+      icon: Zap,
       title: "Tested by cardio lovers",
       description: "Real athletes, real feedback, real performance",
       gradient: "from-purple-400 to-blue-500"
