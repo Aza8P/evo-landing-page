@@ -6,43 +6,43 @@ const Features = () => {
   const features = [
     {
       icon: Activity,
-      title: "No-slip stay-put waistband",
-      description: "Engineered to stay in place during your most intense sessions",
+      title: "No-Slip Waistband",
+      description: "Stays put even during hill climbs.",
       gradient: "from-white to-gray-300",
       animation: "hover:rotate-12"
     },
     {
       icon: Wind,
-      title: "Sweat-wicking + fast-dry fabric",
-      description: "Advanced moisture management keeps you cool and comfortable",
+      title: "Fast-Dry Fabric",
+      description: "Breathes as hard as you do.",
       gradient: "from-gray-200 to-gray-400",
       animation: "hover:scale-125"
     },
     {
       icon: Zap,
-      title: "Sculpts without compressing",
-      description: "Perfect balance of support and freedom of movement",
+      title: "Compression",
+      description: "Support without squeeze.",
       gradient: "from-white to-gray-300",
       animation: "hover:-rotate-12"
     },
     {
       icon: Activity,
-      title: "Built for spin bikes, HIIT, and sweaty indoor sessions",
-      description: "Specifically designed for high-intensity indoor workouts",
+      title: "Spin-Ready Fit",
+      description: "Handles saddle shifts and surges.",
       gradient: "from-gray-300 to-gray-500",
       animation: "hover:scale-110"
     },
     {
       icon: Wind,
-      title: "Flat seams = no chafing",
-      description: "Smooth construction eliminates irritation and discomfort",
+      title: "Flatlock Seams",
+      description: "Zero irritation.",
       gradient: "from-white to-gray-400",
       animation: "hover:rotate-6"
     },
     {
       icon: Zap,
-      title: "Tested by cardio lovers",
-      description: "Real athletes, real feedback, real performance",
+      title: "Rider-Tested",
+      description: "Built with cardio community feedback.",
       gradient: "from-gray-200 to-gray-500",
       animation: "hover:-rotate-6"
     }

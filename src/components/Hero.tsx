@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const Hero = () => {
   return (
@@ -26,21 +27,23 @@ const Hero = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-lg mx-auto lg:mx-0">
-              High-performance tights designed specifically for indoor cycling & cardio.
+              High-performance tights made for sweaty, high-intensity indoor workouts.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6">
               <Button size="lg" className="bg-gradient-to-r from-white to-gray-300 hover:from-gray-100 hover:to-gray-400 text-black px-8 py-6 text-lg font-semibold transform hover:scale-105 transition-all border border-white/20">
-                ✅ Reserve Yours Now
+                Reserve Yours Now
               </Button>
-              <Button size="lg" variant="outline" className="border-white/50 text-white hover:bg-white/10 hover:text-white px-8 py-6 text-lg font-semibold backdrop-blur-sm">
-                💌 Join the Waitlist
-              </Button>
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 bg-gray-900/50 border-white/20 text-white placeholder-gray-400 focus:border-white/50 backdrop-blur-sm px-4 py-6"
+              />
             </div>
             
-            <div className="mt-8 p-4 bg-gray-900/80 rounded-lg border border-white/20 backdrop-blur-sm">
-              <div className="text-sm text-gray-400 mb-1">Expected retail: $55 USD</div>
-              <div className="text-white font-semibold">Early supporters get exclusive pricing</div>
+            <div className="text-sm text-gray-400 flex items-center justify-center lg:justify-start gap-2">
+              <span>🚨</span>
+              <span>Early production batch. First come, first served.</span>
             </div>
           </div>
           
@@ -53,7 +56,7 @@ const Hero = () => {
                 loop 
                 playsInline
                 className="w-full h-[400px] md:h-[600px] object-cover"
-                poster="https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                poster="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               >
                 <source src="https://player.vimeo.com/external/518698046.sd.mp4?s=b56f06b58c95b69dc8af0a93a76b48b91be8dd3e&profile_id=139&oauth2_token_id=57447761" type="video/mp4" />
                 Your browser does not support the video tag.
@@ -63,17 +66,10 @@ const Hero = () => {
               {/* Floating Product Badge */}
               <div className="absolute bottom-6 left-6 bg-black/80 backdrop-blur-sm rounded-lg p-4 border border-white/30">
                 <div className="text-white font-semibold text-sm">ÉVO HIIT+ Tights</div>
-                <div className="text-gray-300 text-xs">Pre-Release Edition</div>
+                <div className="text-gray-300 text-xs">Navy with Light Green + White</div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      
-      {/* Urgency Banner */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-white/20 via-gray-400/20 to-white/20 text-white text-center py-3 z-20 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <span className="text-sm font-semibold">🚨 Limited early production batch. Sign up to be the first in line.</span>
         </div>
       </div>
     </section>
