@@ -10,57 +10,56 @@ const Features3D = () => {
     {
       id: 1,
       title: "Anti-slip waistband",
-      description: "Stays secure during intense movements",
-      position: { x: 0, y: 0.8, z: 0 }
+      description: "Stays put even during hill climbs",
+      position: { x: 0, y: 1.2, z: 0 }
     },
     {
       id: 2,
       title: "Tummy control & all around support",
       description: "360-degree compression for confidence",
-      position: { x: 0, y: 0.5, z: 0 }
+      position: { x: 0, y: 0.8, z: 0.3 }
     },
     {
       id: 3,
       title: "Fast-dry & sweat-wicking material",
       description: "Breathes as hard as you do",
-      position: { x: 0.3, y: 0.2, z: 0 }
+      position: { x: 0.4, y: 0.3, z: 0 }
     },
     {
       id: 4,
       title: "Stays in place during saddle changes and HIIT transitions",
       description: "No riding up, no adjusting",
-      position: { x: 0, y: 0, z: 0 }
+      position: { x: 0, y: 0.5, z: 0.4 }
     },
     {
       id: 5,
       title: "Built for endurance, not just looks",
       description: "Performance-first design",
-      position: { x: -0.3, y: -0.2, z: 0 }
+      position: { x: -0.4, y: 0, z: 0 }
     },
     {
       id: 6,
       title: "Sculpts the butt area",
       description: "Enhances your natural shape",
-      position: { x: 0, y: -0.4, z: 0.2 }
+      position: { x: 0, y: -0.3, z: -0.4 }
     },
     {
       id: 7,
       title: "Compression waistband",
       description: "Support without squeeze",
-      position: { x: 0, y: 0.6, z: 0 }
+      position: { x: 0, y: 1.1, z: 0.2 }
     },
     {
       id: 8,
       title: "Smooth bonded waistband",
-      description: "No-dig comfort technology",
-      position: { x: 0, y: 0.7, z: 0 }
+      description: "Zero irritation technology",
+      position: { x: 0, y: 1.0, z: -0.2 }
     }
   ];
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    // Three.js setup
     const canvas = canvasRef.current;
     const scene = new (window as any).THREE.Scene();
     const camera = new (window as any).THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
@@ -68,88 +67,151 @@ const Features3D = () => {
     
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = (window as any).THREE.PCFSoftShadowMap;
 
-    // Lighting
-    const ambientLight = new (window as any).THREE.AmbientLight(0x404040, 0.6);
+    // Enhanced lighting setup
+    const ambientLight = new (window as any).THREE.AmbientLight(0x404040, 0.4);
     scene.add(ambientLight);
     
-    const directionalLight = new (window as any).THREE.DirectionalLight(0xffffff, 1);
+    const directionalLight = new (window as any).THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(5, 5, 5);
+    directionalLight.castShadow = true;
     scene.add(directionalLight);
 
-    const pointLight = new (window as any).THREE.PointLight(0x00ff88, 0.5);
-    pointLight.position.set(-5, 0, 5);
-    scene.add(pointLight);
+    const rimLight = new (window as any).THREE.DirectionalLight(0x00ff88, 0.3);
+    rimLight.position.set(-5, 2, -5);
+    scene.add(rimLight);
 
-    // Create pants geometry (simplified representation)
+    const fillLight = new (window as any).THREE.PointLight(0x0088ff, 0.2);
+    fillLight.position.set(0, -2, 3);
+    scene.add(fillLight);
+
+    // Create realistic pants geometry
     const pantsGroup = new (window as any).THREE.Group();
     
-    // Main body
-    const bodyGeometry = new (window as any).THREE.CylinderGeometry(1.2, 0.8, 2, 16);
-    const bodyMaterial = new (window as any).THREE.MeshPhongMaterial({ 
+    // Main torso/hip area with more realistic shape
+    const torsoGeometry = new (window as any).THREE.CylinderGeometry(0.7, 0.9, 0.8, 16);
+    const torsoMaterial = new (window as any).THREE.MeshPhongMaterial({ 
       color: 0x1a1a1a,
-      shininess: 30,
+      shininess: 20,
       transparent: true,
-      opacity: 0.9
+      opacity: 0.95
     });
-    const body = new (window as any).THREE.Mesh(bodyGeometry, bodyMaterial);
-    body.position.y = 0.5;
-    pantsGroup.add(body);
+    const torso = new (window as any).THREE.Mesh(torsoGeometry, torsoMaterial);
+    torso.position.y = 0.9;
+    torso.castShadow = true;
+    pantsGroup.add(torso);
 
-    // Legs
-    const legGeometry = new (window as any).THREE.CylinderGeometry(0.4, 0.3, 1.5, 12);
-    const legMaterial = new (window as any).THREE.MeshPhongMaterial({ 
-      color: 0x1a1a1a,
-      shininess: 30,
-      transparent: true,
-      opacity: 0.9
-    });
-    
-    const leftLeg = new (window as any).THREE.Mesh(legGeometry, legMaterial);
-    leftLeg.position.set(-0.4, -0.75, 0);
-    pantsGroup.add(leftLeg);
-    
-    const rightLeg = new (window as any).THREE.Mesh(legGeometry, legMaterial);
-    rightLeg.position.set(0.4, -0.75, 0);
-    pantsGroup.add(rightLeg);
-
-    // Waistband
-    const waistbandGeometry = new (window as any).THREE.TorusGeometry(1.2, 0.1, 8, 16);
+    // Waistband with ÉVO branding area
+    const waistbandGeometry = new (window as any).THREE.CylinderGeometry(0.72, 0.7, 0.15, 16);
     const waistbandMaterial = new (window as any).THREE.MeshPhongMaterial({ 
-      color: 0x00ff88,
-      shininess: 50
+      color: 0x2a2a2a,
+      shininess: 30
     });
     const waistband = new (window as any).THREE.Mesh(waistbandGeometry, waistbandMaterial);
-    waistband.position.y = 1.5;
-    waistband.rotation.x = Math.PI / 2;
+    waistband.position.y = 1.35;
+    waistband.castShadow = true;
     pantsGroup.add(waistband);
+
+    // Left leg with realistic taper
+    const leftLegUpper = new (window as any).THREE.CylinderGeometry(0.35, 0.4, 0.8, 12);
+    const leftLegLower = new (window as any).THREE.CylinderGeometry(0.25, 0.35, 0.8, 12);
+    const legMaterial = new (window as any).THREE.MeshPhongMaterial({ 
+      color: 0x1a1a1a,
+      shininess: 20,
+      transparent: true,
+      opacity: 0.95
+    });
+    
+    const leftThigh = new (window as any).THREE.Mesh(leftLegUpper, legMaterial);
+    leftThigh.position.set(-0.25, 0.1, 0);
+    leftThigh.castShadow = true;
+    pantsGroup.add(leftThigh);
+    
+    const leftCalf = new (window as any).THREE.Mesh(leftLegLower, legMaterial);
+    leftCalf.position.set(-0.25, -0.7, 0);
+    leftCalf.castShadow = true;
+    pantsGroup.add(leftCalf);
+
+    // Right leg
+    const rightThigh = new (window as any).THREE.Mesh(leftLegUpper, legMaterial);
+    rightThigh.position.set(0.25, 0.1, 0);
+    rightThigh.castShadow = true;
+    pantsGroup.add(rightThigh);
+    
+    const rightCalf = new (window as any).THREE.Mesh(leftLegLower, legMaterial);
+    rightCalf.position.set(0.25, -0.7, 0);
+    rightCalf.castShadow = true;
+    pantsGroup.add(rightCalf);
+
+    // Side panels/seams (inspired by the image)
+    const sidePanelGeometry = new (window as any).THREE.PlaneGeometry(0.1, 1.8);
+    const sidePanelMaterial = new (window as any).THREE.MeshPhongMaterial({ 
+      color: 0x333333,
+      transparent: true,
+      opacity: 0.8
+    });
+    
+    const leftSidePanel = new (window as any).THREE.Mesh(sidePanelGeometry, sidePanelMaterial);
+    leftSidePanel.position.set(-0.45, 0.2, 0);
+    leftSidePanel.rotation.y = Math.PI / 2;
+    pantsGroup.add(leftSidePanel);
+    
+    const rightSidePanel = new (window as any).THREE.Mesh(sidePanelGeometry, sidePanelMaterial);
+    rightSidePanel.position.set(0.45, 0.2, 0);
+    rightSidePanel.rotation.y = -Math.PI / 2;
+    pantsGroup.add(rightSidePanel);
+
+    // ÉVO logo area on waistband
+    const logoGeometry = new (window as any).THREE.PlaneGeometry(0.2, 0.08);
+    const logoMaterial = new (window as any).THREE.MeshPhongMaterial({ 
+      color: 0x00ff88,
+      emissive: 0x004422
+    });
+    const logo = new (window as any).THREE.Mesh(logoGeometry, logoMaterial);
+    logo.position.set(0, 1.35, 0.36);
+    pantsGroup.add(logo);
 
     scene.add(pantsGroup);
 
-    // Feature highlight spheres
+    // Feature highlight spheres with better positioning
     const highlightSpheres = features.map((feature) => {
-      const sphereGeometry = new (window as any).THREE.SphereGeometry(0.05, 8, 8);
+      const sphereGeometry = new (window as any).THREE.SphereGeometry(0.04, 8, 8);
       const sphereMaterial = new (window as any).THREE.MeshBasicMaterial({ 
         color: 0x00ff88,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.9
       });
       const sphere = new (window as any).THREE.Mesh(sphereGeometry, sphereMaterial);
       sphere.position.set(feature.position.x, feature.position.y, feature.position.z);
       sphere.userData = { featureId: feature.id };
+      
+      // Add a subtle glow effect
+      const glowGeometry = new (window as any).THREE.SphereGeometry(0.06, 8, 8);
+      const glowMaterial = new (window as any).THREE.MeshBasicMaterial({ 
+        color: 0x00ff88,
+        transparent: true,
+        opacity: 0.2
+      });
+      const glow = new (window as any).THREE.Mesh(glowGeometry, glowMaterial);
+      sphere.add(glow);
+      
       pantsGroup.add(sphere);
       return sphere;
     });
 
-    camera.position.set(0, 0, 4);
+    camera.position.set(0, 0.5, 3);
+    camera.lookAt(0, 0.2, 0);
 
-    // Mouse controls
+    // Enhanced mouse controls
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
 
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
       previousMousePosition = { x: e.clientX, y: e.clientY };
+      canvas.style.cursor = 'grabbing';
     };
 
     const onMouseMove = (e: MouseEvent) => {
@@ -159,8 +221,11 @@ const Features3D = () => {
           y: e.clientY - previousMousePosition.y
         };
 
-        pantsGroup.rotation.y += deltaMove.x * 0.01;
-        pantsGroup.rotation.x += deltaMove.y * 0.01;
+        pantsGroup.rotation.y += deltaMove.x * 0.008;
+        pantsGroup.rotation.x += deltaMove.y * 0.008;
+        
+        // Limit vertical rotation
+        pantsGroup.rotation.x = Math.max(-Math.PI/3, Math.min(Math.PI/3, pantsGroup.rotation.x));
       }
 
       previousMousePosition = { x: e.clientX, y: e.clientY };
@@ -168,9 +233,12 @@ const Features3D = () => {
 
     const onMouseUp = () => {
       isDragging = false;
+      canvas.style.cursor = 'grab';
     };
 
     const onMouseClick = (e: MouseEvent) => {
+      if (isDragging) return;
+      
       const rect = canvas.getBoundingClientRect();
       const mouse = new (window as any).THREE.Vector2();
       mouse.x = ((e.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
@@ -190,28 +258,38 @@ const Features3D = () => {
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('mouseup', onMouseUp);
     canvas.addEventListener('click', onMouseClick);
+    canvas.style.cursor = 'grab';
 
-    // Animation loop
+    // Enhanced animation loop
     const animate = () => {
       requestAnimationFrame(animate);
 
+      const time = Date.now() * 0.001;
+
       // Gentle auto-rotation when not being dragged
       if (!isDragging) {
-        pantsGroup.rotation.y += 0.005;
+        pantsGroup.rotation.y += 0.003;
       }
 
-      // Animate highlight spheres
+      // Enhanced highlight sphere animations
       highlightSpheres.forEach((sphere, index) => {
-        const time = Date.now() * 0.001;
-        sphere.material.opacity = 0.6 + Math.sin(time + index) * 0.2;
+        const baseOpacity = 0.7;
+        const pulse = Math.sin(time * 2 + index * 0.5) * 0.3;
+        sphere.material.opacity = baseOpacity + pulse;
         
         if (selectedFeature === sphere.userData.featureId) {
-          sphere.scale.setScalar(1.5 + Math.sin(time * 4) * 0.2);
+          const scale = 1.3 + Math.sin(time * 6) * 0.2;
+          sphere.scale.setScalar(scale);
           sphere.material.color.setHex(0xffffff);
+          sphere.material.opacity = 1;
         } else {
           sphere.scale.setScalar(1);
           sphere.material.color.setHex(0x00ff88);
         }
+        
+        // Subtle floating animation
+        const originalY = features[index].position.y;
+        sphere.position.y = originalY + Math.sin(time * 1.5 + index) * 0.02;
       });
 
       renderer.render(scene, camera);
@@ -262,11 +340,14 @@ const Features3D = () => {
             <canvas 
               ref={canvasRef}
               className="w-full h-[600px] cursor-grab active:cursor-grabbing border border-white/20 rounded-lg"
-              style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)' }}
             />
             {!isLoaded && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 rounded-lg">
-                <div className="text-white">Loading 3D model...</div>
+                <div className="text-white flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400"></div>
+                  <span>Loading 3D model...</span>
+                </div>
               </div>
             )}
           </div>
@@ -282,7 +363,7 @@ const Features3D = () => {
                   {selectedFeatureData.description}
                 </p>
                 <div className="flex items-center text-sm text-gray-400">
-                  <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-green-600 rounded-full mr-2"></div>
+                  <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-green-600 rounded-full mr-2 animate-pulse"></div>
                   Click another highlight to explore more features
                 </div>
               </div>
@@ -294,11 +375,11 @@ const Features3D = () => {
                 <p className="text-gray-300 text-lg mb-6">
                   Click on the green highlights on the 3D model to discover each performance feature of the ÉVO HIIT+ Tights.
                 </p>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-3">
                   {features.slice(0, 4).map((feature) => (
                     <div 
                       key={feature.id}
-                      className="text-sm text-gray-400 cursor-pointer hover:text-white transition-colors"
+                      className="text-sm text-gray-400 cursor-pointer hover:text-white transition-colors p-2 rounded hover:bg-white/5"
                       onClick={() => setSelectedFeature(feature.id)}
                     >
                       • {feature.title}
@@ -310,9 +391,6 @@ const Features3D = () => {
           </div>
         </div>
       </div>
-
-      {/* Three.js CDN */}
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     </section>
   );
 };
