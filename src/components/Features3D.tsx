@@ -1,10 +1,11 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 
 const Features3D = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [selectedFeature, setSelectedFeature] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [featureLabels, setFeatureLabels] = useState<Array<{id: number, x: number, y: number, visible: boolean}>>([]);
 
   const features = [
     {
@@ -58,9 +59,10 @@ const Features3D = () => {
   ];
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !containerRef.current) return;
 
     const canvas = canvasRef.current;
+    const container = containerRef.current;
     const scene = new (window as any).THREE.Scene();
     const camera = new (window as any).THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
     const renderer = new (window as any).THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
@@ -204,6 +206,32 @@ const Features3D = () => {
     camera.position.set(0, 0.5, 3);
     camera.lookAt(0, 0.2, 0);
 
+    // Function to update 2D label positions
+    const updateLabelPositions = () => {
+      const tempVector = new (window as any).THREE.Vector3();
+      const newLabels = features.map((feature) => {
+        // Convert 3D position to screen coordinates
+        tempVector.set(feature.position.x, feature.position.y, feature.position.z);
+        tempVector.applyMatrix4(pantsGroup.matrixWorld);
+        tempVector.project(camera);
+        
+        // Convert to pixel coordinates
+        const x = (tempVector.x * 0.5 + 0.5) * canvas.clientWidth;
+        const y = (tempVector.y * -0.5 + 0.5) * canvas.clientHeight;
+        
+        // Check if the point is in front of the camera
+        const visible = tempVector.z < 1;
+        
+        return {
+          id: feature.id,
+          x,
+          y,
+          visible
+        };
+      });
+      setFeatureLabels(newLabels);
+    };
+
     // Enhanced mouse controls
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
@@ -226,6 +254,8 @@ const Features3D = () => {
         
         // Limit vertical rotation
         pantsGroup.rotation.x = Math.max(-Math.PI/3, Math.min(Math.PI/3, pantsGroup.rotation.x));
+        
+        updateLabelPositions();
       }
 
       previousMousePosition = { x: e.clientX, y: e.clientY };
@@ -269,6 +299,7 @@ const Features3D = () => {
       // Gentle auto-rotation when not being dragged
       if (!isDragging) {
         pantsGroup.rotation.y += 0.003;
+        updateLabelPositions();
       }
 
       // Enhanced highlight sphere animations
@@ -300,12 +331,14 @@ const Features3D = () => {
       camera.aspect = canvas.clientWidth / canvas.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      updateLabelPositions();
     };
 
     window.addEventListener('resize', handleResize);
 
     setIsLoaded(true);
     animate();
+    updateLabelPositions();
 
     return () => {
       canvas.removeEventListener('mousedown', onMouseDown);
@@ -320,9 +353,17 @@ const Features3D = () => {
 
   return (
     <section className="py-20 bg-black text-white relative overflow-hidden">
-      {/* Holographic Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
-      <div className="absolute inset-0 bg-[conic-gradient(from_45deg,transparent,rgba(255,255,255,0.03),transparent,rgba(156,163,175,0.05),transparent)]"></div>
+      {/* Spinning Studio Background */}
+      <div 
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3e%3cdefs%3e%3cpattern id='spinning-bikes' x='0' y='0' width='40' height='40' patternUnits='userSpaceOnUse'%3e%3ccircle cx='20' cy='20' r='2' fill='%23ffffff' opacity='0.1'/%3e%3c/pattern%3e%3c/defs%3e%3crect width='100' height='100' fill='url(%23spinning-bikes)'/%3e%3c/svg%3e")`,
+        }}
+      ></div>
+      
+      {/* Gradient overlays for studio ambiance */}
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 via-transparent to-green-900/10"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-gray-900/20 to-black/40"></div>
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
@@ -334,14 +375,78 @@ const Features3D = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* 3D Model */}
-          <div className="relative">
+        <div className="relative max-w-6xl mx-auto">
+          {/* 3D Model Container */}
+          <div ref={containerRef} className="relative">
             <canvas 
               ref={canvasRef}
               className="w-full h-[600px] cursor-grab active:cursor-grabbing border border-white/20 rounded-lg"
-              style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)' }}
+              style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 70%)' }}
             />
+            
+            {/* Feature Labels positioned at 3D coordinates */}
+            {featureLabels.map((label) => {
+              const feature = features.find(f => f.id === label.id);
+              if (!feature || !label.visible) return null;
+              
+              const isSelected = selectedFeature === label.id;
+              
+              return (
+                <div
+                  key={label.id}
+                  className={`absolute pointer-events-none transition-all duration-300 ${
+                    isSelected ? 'z-20' : 'z-10'
+                  }`}
+                  style={{
+                    left: `${label.x}px`,
+                    top: `${label.y}px`,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  <div 
+                    className={`bg-black/80 backdrop-blur-sm border border-green-400/50 rounded-lg p-3 min-w-[200px] transition-all duration-300 ${
+                      isSelected 
+                        ? 'bg-green-900/90 border-green-400 shadow-lg shadow-green-400/20 scale-110' 
+                        : 'hover:bg-gray-900/90'
+                    }`}
+                  >
+                    <h4 className={`font-semibold text-sm mb-1 ${
+                      isSelected ? 'text-green-300' : 'text-white'
+                    }`}>
+                      {feature.title}
+                    </h4>
+                    <p className={`text-xs ${
+                      isSelected ? 'text-green-200' : 'text-gray-300'
+                    }`}>
+                      {feature.description}
+                    </p>
+                    
+                    {/* Connection line to feature point */}
+                    <div 
+                      className={`absolute w-0.5 h-6 ${
+                        isSelected ? 'bg-green-400' : 'bg-white/30'
+                      }`}
+                      style={{
+                        bottom: '-24px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                      }}
+                    ></div>
+                    <div 
+                      className={`absolute w-2 h-2 rounded-full ${
+                        isSelected ? 'bg-green-400' : 'bg-white/50'
+                      }`}
+                      style={{
+                        bottom: '-26px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              );
+            })}
+            
             {!isLoaded && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 rounded-lg">
                 <div className="text-white flex items-center space-x-2">
@@ -352,42 +457,11 @@ const Features3D = () => {
             )}
           </div>
 
-          {/* Feature Details */}
-          <div className="space-y-6">
-            {selectedFeatureData ? (
-              <div className="bg-gray-900/50 p-8 rounded-xl border border-white/20 backdrop-blur-sm">
-                <h3 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
-                  {selectedFeatureData.title}
-                </h3>
-                <p className="text-gray-300 text-lg mb-6">
-                  {selectedFeatureData.description}
-                </p>
-                <div className="flex items-center text-sm text-gray-400">
-                  <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-green-600 rounded-full mr-2 animate-pulse"></div>
-                  Click another highlight to explore more features
-                </div>
-              </div>
-            ) : (
-              <div className="bg-gray-900/50 p-8 rounded-xl border border-white/20 backdrop-blur-sm">
-                <h3 className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
-                  Explore Our Features
-                </h3>
-                <p className="text-gray-300 text-lg mb-6">
-                  Click on the green highlights on the 3D model to discover each performance feature of the ÉVO HIIT+ Tights.
-                </p>
-                <div className="grid grid-cols-1 gap-3">
-                  {features.slice(0, 4).map((feature) => (
-                    <div 
-                      key={feature.id}
-                      className="text-sm text-gray-400 cursor-pointer hover:text-white transition-colors p-2 rounded hover:bg-white/5"
-                      onClick={() => setSelectedFeature(feature.id)}
-                    >
-                      • {feature.title}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+          {/* Instructions */}
+          <div className="text-center mt-8">
+            <p className="text-gray-400 text-sm">
+              Drag to rotate • Click green points to highlight features
+            </p>
           </div>
         </div>
       </div>
